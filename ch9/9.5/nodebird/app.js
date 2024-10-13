@@ -7,6 +7,9 @@ const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
 const passport = require('passport');
 
+// .env 파일에서 key 값들을 읽어 process.env를 만든다.
+// 자바스크립트는 위에서 아래로 실행되므로 process.env가 빈 상황을 방지하기 위해
+// dotenv는 코드 상단에 위치시키는 게 좋다.
 dotenv.config();
 const pageRouter = require('./routes/page');
 const authRouter = require('./routes/auth');
@@ -49,6 +52,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// '/': 미들웨어가 어떤 경로에 적용될지를 정의
 app.use('/', pageRouter);
 app.use('/auth', authRouter);
 app.use('/post', postRouter);
@@ -62,8 +66,11 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
+  // 보안 측면에서 배포모드일때 에러를 노출하지 않는다.
+  // 개발모드일때 서비스에 에러 로그를 넘김
   res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
   res.status(err.status || 500);
+  // nunjucks가 views 폴더에서 error.html을 찾아 반환
   res.render('error');
 });
 
