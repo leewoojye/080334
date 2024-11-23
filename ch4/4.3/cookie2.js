@@ -26,10 +26,12 @@ http.createServer(async (req, res) => {
       'Set-Cookie': `name=${encodeURIComponent(name)}; Expires=${expires.toGMTString()}; HttpOnly; Path=/`,
     });
     res.end();
+    console.log(req.url);
   // name이라는 쿠키가 있는 경우
   } else if (cookies.name) {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end(`${cookies.name}님 안녕하세요`);
+    console.log(req.url);
   } else {
     try {
       const data = await fs.readFile('./cookie2.html');
@@ -39,6 +41,7 @@ http.createServer(async (req, res) => {
       res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
       res.end(err.message);
     }
+    console.log(req.url);
   }
 })
   .listen(8084, () => {
